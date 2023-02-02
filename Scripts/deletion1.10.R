@@ -29,8 +29,10 @@ trace <- function(A) {
   return(tr[[1]])
 }
 
+
 # trace
 #p.t = trace(v.matrix)
+
 
 
 # variance -covariance matrix 
