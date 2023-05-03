@@ -22,18 +22,32 @@ library(arm)
 
 #install.packages('lm')
 library(readxl)
-Mturk<- read_excel("Dropbox (ASU)/Code/8.3/MtutkP.xlsx")
+Mturk<- read_excel("/Users/yang/Dropbox (ASU)/Code/Data-Reliabilty/Data/MtutkP.xlsx")
 View(Mturk)
+
+pldf = Mturk %>% group_by(assgID) %>%
+  summarise(accuracy= 1 - sum(accuracy)/n(),
+            time = mean(time),
+            n = n())
+
+pldf
+range(pldf$time)
+cor(pldf$accuracy, pldf$time)
+
 
 Mturk$decision = MTurkPerformanceData$`Final Decision`
 
 Mturk$`Correct Prediction` <- ifelse(Mturk$`Correct Prediction`=='Error', 1, 0)
 
+
 colnames(Mturk)[3] <- 'assgID'
 colnames(Mturk)[4] <- 'interaction'
 colnames(Mturk)[5] <- 'deferral'
 colnames(Mturk)[6] <- 'task'
-colnames(Mturk)[11] <- 'error'
+colnames(Mturk)[11] <- 'accuracy'
+colnames(Mturk)[10] <- 'time'
+
+
 
 Mturk = MTurkPerformanceData
 
@@ -48,7 +62,7 @@ summary(mod_m)
 
 colnames(Mturk)
 
-m1 = glmer(error ~ (1 | assgID) + (1 | TID), 
+m1 = glmer(accuracy ~ time + (1 + time | assgID) + (1 + time | TID), 
              data = Mturk, family = binomial, control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1e6)), nAGQ = 1)
 summary(m1)
 
@@ -57,6 +71,8 @@ m2 = glmer(error ~ (1 | assgID) + (1 | TID) + (1 | task/TID),
              data = Mturk, family = binomial, control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1e6)), nAGQ = 1)
 summary(m2)
 anova(mod4, mod6)
+
+
 
 
 m3 = glmer(error ~ (1 | assgID)  + (1 | task/TID), 

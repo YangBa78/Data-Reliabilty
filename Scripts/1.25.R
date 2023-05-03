@@ -19,27 +19,51 @@ plot(x, p.1, type = "l")
 # test,  
 
 
+# variance
+var_image <- 20
+var_worker <- 2
+aii <- 3/(20+3)
+aii
+
+
 
 #set.seed(123)
-n_worker <- 30
-n_image <-40
+n_worker <- 50
+n_image <-60
 
 
 # image
-def.image <- defData(varname = "image_eff", dist = "normal", formula = 0, variance = 10,
+def.image <- defData(varname = "image_eff", dist = "normal", formula = 0, variance = var_image,
                      id = "imageid")
 def.image <- defData(def.image, varname = "nWorker", dist = "nonrandom", formula = n_worker)
-def.image <- defData(def.image, varname = 'trueLable', dist = "binary", formula = 0.5)
+#def.image <- defData(def.image, varname = 'trueLable', dist = "binary", formula = 0.5)
 
 #set.seed(123)
 dtImage <- genData(n_image, def.image)
 
 dtImage$task <- ifelse(abs(dtImage$image_eff)< median(abs(dtImage$image_eff)), 'hard', 'easy')
-dtImage$trueLable <- ifelse(dtImage$trueLable==1, 'different', 'same')
+dtImage$trueLable <- ifelse(dtImage$image_eff>0, 'different', 'same')
+dtImage$abs <- abs(dtImage$image_eff)
+#dtImage$difficulty <- cut(dtImage$abs, breaks = 3, labels = c(0, 0.5, 1))
+dtImage$difficulty <- ifelse(dtImage$task=='easy', 0, 1)
 
+#dtImage$trueLable <- ifelse(dtImage$trueLable==1, 'different', 'same')
+
+# randomly assign true label
+#row_indices <- 1:n_image
+#selected_indices <- sample(row_indices, size = floor(n_image/2), replace = FALSE)
+#label <- numeric(n_image)
+#label[selected_indices] <- 'same'
+#label[-selected_indices] <- 'different'
+#table(label)
+#dtImage$trueLable <- label
+
+dtImage[dtImage$image_eff>0,]
+# check if data is balanced 
 table(dtImage$task)
 table(dtImage$trueLable)
 table(dtImage$trueLable, dtImage$task)
+table(dtImage$difficulty)
 
 
 dtImage
@@ -58,7 +82,7 @@ dtTime <- dtTime[, c('imageid', 'image_eff', 'nWorker', 'trueLable', 'task', 'wo
 dtTime
 
 # worker
-def.worker <- defData(varname = "worker_eff", dist = "normal", formula = 0, variance = 3, 
+def.worker <- defData(varname = "worker_eff", dist = "normal", formula = 0, variance = var_worker, 
                       id = "workerid")
 
 dtWorker <- genData(n_worker, def.worker)
@@ -73,8 +97,10 @@ head(dd, 31)
 
 
 # response variable
-def.d <- defDataAdd(varname = "decision", formula = "-0.5 + image_eff + worker_eff", 
+def.d <- defDataAdd(varname = "decision", formula = "image_eff + worker_eff", 
                     dist="binary", link = "logit")
+#def.d <- defDataAdd(varname = "decision", formula = "-0.5 + image_eff + worker_eff", 
+#                    dist="binary", link = "logit")
 
 dt <- addColumns(def.d, dd)
 dt
@@ -95,9 +121,12 @@ summary(fit)
 table(dt$imageid, dt$decision)
 table(dt$workerid, dt$decision)
 table(dt$worker_eff, dt$decision)
+dtWorker[order(dtWorker$worker_eff, decreasing = TRUE), ]
 
+# 15, 
+# normal 27
 
-
+dt
 ############### introduce spammers ##########################
 
 
@@ -120,22 +149,53 @@ xtabs(~decision + trueLable, data = newT) %>%
 
 #test if P(decision = 1, different) = P(decision=1)*P(different)
 0.225*0.5 == 0.125
-newT$workerid <- 31
+newT$workerid <- 51
 newT$worker_eff <- NA
 newT <- newT[, c("imageid", "image_eff", "nWorker", "trueLable", "task", "workerid",  "worker_eff",
                  "decision" )]
 
 newdt <- rbind(dt, newT)
 
+table(newdt[newdt$workerid==51,]$trueLable, newdt[newdt$workerid==51,]$decision)
+newdt[newdt$workerid==51,]
+
+
+
+# random guess2
+newT1 <- dtImage
+p.0 <- 0.3
+newT1$decision <- NA
+#newT$correct <- NA
+newT1$decision[newT1$task == "easy"] <- 
+  sample(c(0,1), sum(newT1$task == "easy"), prob=c(0.5, 1-0.5), rep=TRUE)
+newT1$decision[newT1$task == "hard"] <- 
+  sample(c(0,1), sum(newT1$task == "hard"), prob=c(0.5, 1-0.5), rep=TRUE)
+
+newT1
+xtabs(~decision + trueLable, data = newT1) %>%
+  prop.table() %>%
+  round(4) %>%
+  addmargins()
+
+#test if P(decision = 1, different) = P(decision=1)*P(different)
+0.225*0.5 == 0.125
+newT1$workerid <- 53
+newT1$worker_eff <- NA
+newT1 <- newT1[, c("imageid", "image_eff", "nWorker", "trueLable", "task", "workerid",  "worker_eff",
+                 "decision" )]
+
+newdt1 <- rbind(dt, newT1)
+
+
 
 fit1<- glmer(as.factor(decision) ~ (1 | workerid) + (1 | imageid),   
-             data = newdt, family = binomial)
+             data = newdt1, family = binomial)
 summary(fit1)
 
 
 # repeat pattern
 newT.1 <- dtImage
-newT.1$workerid <- 32
+newT.1$workerid <- 52
 newT.1$worker_eff <- NA
 newT.1$decision <- rep(c(0,1), times = n_image/2)  
   
@@ -183,8 +243,56 @@ for (x in unique(dt$imageid)){
 
 
 newdtC <- rbind(newdt, newT.1)
+newdtC1 <-rbind(newdtC, newT1)
 
+
+table(newdtC1[newdtC1$workerid==53,]$trueLable, newdtC1[newdtC1$workerid==53,]$decision)
+table(newdtC[newdtC$workerid==52,]$trueLable, newdtC[newdtC$workerid==52,]$decision)
+table(newdtC[newdtC$workerid==1,]$trueLable, newdtC[newdtC$workerid==1,]$decision)
 #spammer: 1, 3, 20, 31, 32
+# 13
+
+
+
+# generate errors
+newdtC1$difficulty <- ifelse(newdtC1$task=='easy', 0, 1)
+newdtC1$converted_true <- ifelse(newdtC1$trueLable=='same', 0, 1)
+newdtC1$error <- ifelse(newdtC1$converted_true == newdtC1$decision, 0, 1)
+sum(newdtC1[newdtC1$workerid==51,][newdtC1[newdtC1$workerid==51,]$difficulty==0,]$error)
+sum(newdtC1[newdtC1$workerid==51,][newdtC1[newdtC1$workerid==51,]$difficulty==1,]$error)
+
+# plot
+plot(c(0, 1), c(sum(newdtC1[newdtC1$workerid==53,][newdtC1[newdtC1$workerid==53,]$difficulty==0,]$error), 
+                sum(newdtC1[newdtC1$workerid==53,][newdtC1[newdtC1$workerid==53,]$difficulty==1,]$error)), 
+     xlim=c(0, 1),
+     ylim = c(0,30),
+     ylab="# error", xlab="task difficulty(easy - hard)",
+     type = 'l')
+
+
+plot(c(0, 1), c(sum(newdtC1[newdtC1$workerid==51,][newdtC1[newdtC1$workerid==51,]$difficulty==0,]$error), 
+                sum(newdtC1[newdtC1$workerid==51,][newdtC1[newdtC1$workerid==51,]$difficulty==1,]$error)), 
+     xlim=c(0, 1),
+     ylim = c(0,30),
+     ylab="# error", xlab="task difficulty(easy - hard)",
+     type = 'l')
+
+
+
+table(newdtC1$workerid, newdtC1$error)
+
+post<- cbind( as.data.frame.matrix(table(newdtC1$workerid, newdtC1$decision)),
+      as.data.frame.matrix(table(newdtC1$workerid, newdtC1$error)))[, c(1,2, 4)]
+
+colnames(post)<- c(0, 1, 'error')
+post
+post[order(error),]
+
+sp = c(21, 16, 18, 17, 17, 19, 20, 19, 19, 21, 18)
+idx = c(1, 11, 13, 16, 18, 23, 28, 30, 31, 33, 45)
+dim(post[-idx, ])
+
+plot(c(mean(sp), mean(post$error), mean(post[-idx, ]$error)), type = 'l')
 
 
 

@@ -14,9 +14,9 @@ library(dplyr)
 
 # REM
 p = glmer(as.factor(decision) ~ (1 | workerid) + (1 | imageid),   
-          data = newdtC, family = binomial)
-
-p = glmer(as.factor(mod_decision) ~ (1 | workerid) + (1 | imageid),   
+          data = newdtC1, family = binomial)
+p
+p = glmer(as.factor(decision) ~ (1 | workerid) + (1 | imageid),   
           data = dt, family = binomial)
 
 
@@ -93,7 +93,7 @@ p_value <- c()
 
 #-2*(logLik(p)[1]- logLik(p_t)[1])
 
-for (x in unique(newdtC$workerid)) {
+for (x in unique(newdtC1$workerid)) {
   workerid <- append(workerid, x)
   p_temp <- exclude.influence(p, "workerid", x)
   loglik <- append(loglik, -2*(logLik(p)[1]- logLik(p_temp)[1]))
@@ -167,8 +167,55 @@ dfl
 
 
 dfl[order(loglik),]
-dfl[order(vartrace),]
+dfl[order(abs(vartrace)),]
 dfl[order(total.var.change),]
+
+
+#spamer1 <- c(53, 52, 51, 23, 28, 1, 30, 13, 16, 31, 18, 33, 11, 45)
+spamer1 <- c(53, 52, 51, 12, 36, 22, 41)
+aii <- c()
+vartrace <- c()
+workerid <-c()
+aii
+vartrace
+p <-c(p)
+
+for (x in spamer1){
+  workerid <- append(workerid, x)
+  p_temp <- exclude.influence(p, "workerid", x)
+  #loglik <- append(loglik, -2*(logLik(p)[1]- logLik(p_temp)[1]))
+  vartrace <- append(vartrace,  trace(v.matrix - as.matrix(Matrix::bdiag(VarCorr(p_temp)))))
+  aii <- append(aii, data.frame(VarCorr(p_temp))$vcov[2] / sum(data.frame(VarCorr(p_temp))$vcov))
+  data <- newdtC1[!newdtC1$workerid==x,]
+  p <- glmer(as.factor(decision) ~ (1 | workerid) + (1 | imageid),   
+            data = data, family = binomial)
+}
+
+plt <- data.frame(workerid, aii)
+plt
+#plot(as.factor(plt$workerid), plt$aii, type = 'l')
+
+#plot(as.factor(workerid), aii, type = 'l')
+#workerid
+
+library(ggplot2)
+ggplot(plt) + 
+  geom_bar(stat="identity", aes(x=as.factor(workerid), y=aii)) +
+  scale_x_discrete(limits = as.factor(workerid))
+
+workerid <- append(workerid, spamer1[x])
+p_temp <- exclude.influence(p, "workerid", spamer1[x])
+aii <- append(aii, data.frame(VarCorr(p_temp))$vcov[2] / sum(data.frame(VarCorr(p_temp))$vcov))
+
+
+newdtC1[!newdtC1$workerid==1,]
+
+spamer1[1]
+for(x in 1:length(spamer1)){
+  print(x)
+}
+
+
 
 
 cor(dfl$loglik, abs(dfl$worker_eff)) # -0.6561019.      # -0.2752111
@@ -193,7 +240,7 @@ varint.image.change <- c()
 disagreerate <- c()
 
 
-for (x in unique(newdtC$imageid)) {
+for (x in unique(dt$imageid)) {
   imageid <- append(imageid, x)
   p_temp <- exclude.influence(p, "imageid", x)
   loglik <- append(loglik, -2*(logLik(p)[1]- logLik(p_temp)[1]))

@@ -24,11 +24,34 @@ head(simul)
 
 
 for (i in 1:n_worker) {
-  for(j in 1:n_task)
-  {  log_odds = worker_eff[i] + task_eff[j] + task_worker_eff[i*j]
-  simul$decision[simul$wokerid==i & simul$taskid==j] = rbinom(1, 1, plogis(log_odds))
+  if (i == 1){
+     for(j in 1:n_task)
+       {log_odds = worker_eff[i] + task_eff[j] + task_worker_eff[i*j]
+       simul$decision[simul$wokerid==i & simul$taskid==j] = rbinom(1, 1, 0.5)
+       }
+   } else {
+     for(j in 1:n_task)
+       {log_odds = worker_eff[i] + task_eff[j] + task_worker_eff[i*j]
+        simul$decision[simul$wokerid==i & simul$taskid==j] = rbinom(1, 1, plogis(log_odds))
+   }
   }
 }
+
+##### the other one ######
+simul_1 = expand.grid(wokerid=1:n_worker,taskid=1:n_task)
+simul_1$task = ifelse(simul_1$taskid<=15, 'easy', 'difficult')
+head(simul_1)
+
+
+for (i in 1:n_worker) {
+    for(j in 1:n_task)
+    {log_odds = worker_eff[i] + task_eff[j] + task_worker_eff[i*j]
+    simul_1$decision[simul_1$wokerid==i & simul_1$taskid==j] = rbinom(1, 1, plogis(log_odds))
+    }
+}
+
+head(simul)
+sum(simul_1[simul_1$wokerid==1, ]$decision)
 
 # set GT, majority voting
 for (i in 1:n_task){
@@ -74,11 +97,22 @@ min(table(simul[simul$task=='difficult', ]$decision))/sum(table(simul[simul$task
 
 #plot(sort(w))
 
-fit = glmer(
+p = glmer(
   data = simul
-  , formula = decision ~ (1|wokerid) + (1|taskid) + (1|wokerid:taskid)
+  , formula = decision ~ (1|workerid) + (1|taskid)
   , family = binomial
 )
 print(fit)
+summary(fit)
+
+fit1 = glmer(
+  data = simul_1
+  , formula = decision ~ (1|wokerid) + (1|taskid)
+  , family = binomial
+)
+print(fit)
+summary(fit1)
 
 
+p = glmer(as.factor(decision) ~ (1 | workerid) + (1 | imageid),   
+          data = dt, family = binomial)

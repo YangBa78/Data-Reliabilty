@@ -108,4 +108,4 @@ mean(alldisp$disp > 1)
 mean(alldisp$disp > 1.5)
 
 
-rbinom(100, 1, 0.2)
+

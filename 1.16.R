@@ -119,7 +119,7 @@ for (i in normal){
 5/5: #100%
   11/25: #44%
   
-  
+
   
   CrossTable(dt$workerid, dt$decision,  prop.t=TRUE)
 CrossTable(dt$imageid, dt$decision,  prop.t=TRUE)
