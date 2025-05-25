@@ -14,7 +14,7 @@ library(dplyr)
 
 ########################## Airport data ##################################
 
-df = read.csv("~/Dropbox (ASU)/Facewise/DF_Facewise_Airports1.csv")
+df = read.csv("DF_Facewise_Airports1.csv")
 #View(df)
 dim(df)
 
@@ -87,7 +87,7 @@ BIC(Rp)
 #################################################### MTurk data ###################################
 
 
-mt <- read.csv("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/MTurkPerformanceData.csv")
+mt <- read.csv("Data/MTurkPerformanceData.csv")
 
 colnames(mt)
 
@@ -167,7 +167,7 @@ BIC(Rp)
 
 ########################################################## Prolific data ###########################
 
-pl <- read_excel("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/Prolific.xlsx")
+pl <- read_excel("Data/Prolific.xlsx")
 pl = pl[pl['WorkerId']!='2f33f23f23',]
 
 colnames(pl)
