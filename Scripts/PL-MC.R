@@ -1,7 +1,7 @@
 library(readxl)
 library(markovchain)
 
-pl <- read_excel("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/Prolific.xlsx")
+pl <- read_excel("Data/Prolific.xlsx")
 colnames(pl)
 
 
