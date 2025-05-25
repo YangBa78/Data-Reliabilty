@@ -7,7 +7,7 @@ library(ggplot2)
 library(stringr)
 
 
-mt <- read.csv("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/MTurkPerformanceData.csv")
+mt <- read.csv("Data/MTurkPerformanceData.csv")
 
 colnames(mt)
 
