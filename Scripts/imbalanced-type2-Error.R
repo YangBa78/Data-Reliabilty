@@ -74,8 +74,8 @@ ggplot(t, aes(x = `No. of Tasks`, y = `Type II Error`)) +
 
 
 
-write.xlsx(t05, file = "~/Dropbox (ASU)/Code/Data-Reliability/Simulated data/type205.xlsx", append = FALSE)
-write.xlsx(t95, file = "~/Dropbox (ASU)/Code/Data-Reliability/Simulated data/type295.xlsx", append = FALSE)
+write.xlsx(t05, file = "Simulated data/type205.xlsx", append = FALSE)
+write.xlsx(t95, file = "Simulated data/type295.xlsx", append = FALSE)
 
 
 
