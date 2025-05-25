@@ -4,7 +4,7 @@ library(dplyr)
 
 ########################## Airport data ##################################
 
-fw = read.csv("~/Dropbox (ASU)/Facewise/DF_Facewise_Airports1.csv")
+fw = read.csv("DF_Facewise_Airports1.csv")
 
 fw = fw[,c('ID','Time.Spend','Final.Decision', 'Easyness', 'Pair')]
 colnames(fw)[1] = 'workerid'
@@ -102,7 +102,7 @@ print(fit$estimate@transitionMatrix)
 
 ########################################################## Prolific data ###########################
 
-pl <- read_excel("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/Prolific.xlsx")
+pl <- read_excel("Data/Prolific.xlsx")
 pl = pl[pl['WorkerId']!='2f33f23f23',]
 
 pl = pl[,c('WorkerId','Time Spend','Final Decision', 'error', 'task', 'Image 1')]
@@ -175,7 +175,7 @@ print(fit$estimate@transitionMatrix)
 
 #################################################### MTurk data ###################################
 
-mt <- read.csv("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/MTurkPerformanceData.csv")
+mt <- read.csv("Data/MTurkPerformanceData.csv")
 
 mt = mt[,c('Assignment.ID','Completion.Time','Final.Decision', 'Coded.Prediction', 'Task.difficulty', 'TID')]
 colnames(mt)[1] = 'workerid'
