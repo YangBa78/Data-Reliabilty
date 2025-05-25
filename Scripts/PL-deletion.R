@@ -114,9 +114,6 @@ df[df$pvalue<=0.05,]
 # df$zs.a = (df$aii.change - mean(df$aii.change)) / sd(df$aii.change)
 
 
-# write_xlsx(df,"~/Dropbox (ASU)/Code/Data-Reliabilty/pldeletion.xlsx")
-
-
 # ggplot(df) +
 #   geom_point(aes(x = 1:nrow(df), y = loglik)) +
 #   geom_segment(aes(x = 1:nrow(df), xend = 1:nrow(df), y = 0, yend = loglik),
