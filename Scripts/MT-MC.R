@@ -2,7 +2,7 @@ library(readr)
 library(markovchain)
 
 
-mt <- read_csv("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/MTurkPerformanceData.csv")
+mt <- read_csv("Data/MTurkPerformanceData.csv")
 colnames(mt)
 
 mt1 = mt[,c('Assignment ID','Completion Time','Final Decision', 'Coded Prediction')]
