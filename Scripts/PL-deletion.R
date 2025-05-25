@@ -7,7 +7,7 @@ library(ggplot2)
 library(writexl)
 
 
-pl <- read_excel("~/Dropbox (ASU)/Code/Data-Reliabilty/Data/Prolific.xlsx")
+pl <- read_excel("Data/Prolific.xlsx")
 pl = pl[pl['WorkerId']!='2f33f23f23',]
 
 colnames(pl)
