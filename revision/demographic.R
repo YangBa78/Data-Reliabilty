@@ -1,7 +1,7 @@
 library(readxl)
 library(dplyr)
 
-dem <- read.csv("C:/Users/alex7/Downloads/ai-deferral Demographics.csv")
+dem <- read.csv("ai-deferral Demographics.csv")
 dim(dem)
 
 
@@ -56,7 +56,7 @@ dem$screen = as.numeric(dem$screen)
 
 
 ##############
-mt <- read.csv("E:/ASU Dropbox/Yang Ba/new_dq/Data-Reliabilty/Data/MTurkPerformanceData.csv")
+mt <- read.csv("Data/MTurkPerformanceData.csv")
 colnames(mt)
 
 length(unique(mt$WorkerId))
@@ -67,7 +67,7 @@ dim(mt_dem)
 
 
 
-pl <- read_excel("E:/ASU Dropbox/Yang Ba/new_dq/Data-Reliabilty/Data/Prolific.xlsx")
+pl <- read_excel("Data/Prolific.xlsx")
 pl = pl[pl['WorkerId']!='2f33f23f23',]
 
 colnames(pl)
