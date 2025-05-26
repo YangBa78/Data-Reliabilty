@@ -1,7 +1,7 @@
 library(tidyverse)
 
 ########################################### MTurk 
-mt <- read.csv("E:/ASU Dropbox/Yang Ba/Code/Data-Reliabilty/Data/MTurkPerformanceData.csv")
+mt <- read.csv("Data/MTurkPerformanceData.csv")
 
 colnames(mt)
 
@@ -37,7 +37,7 @@ sum(is.na(mt_matrix)) #0
 #   p-value = 0 
 
 ############################################################ Prolific
-pl <- read_excel("E:/ASU Dropbox/Yang Ba/Code/Data-Reliabilty/Data/Prolific.xlsx")
+pl <- read_excel("Data/Prolific.xlsx")
 pl = pl[pl['WorkerId']!='2f33f23f23',]
 
 colnames(pl)
@@ -89,7 +89,7 @@ print(fl.kappa.pl_na)
 
 
 #############################airport data
-fw = read.csv("E:/ASU Dropbox/Yang Ba/Facewise/DF_Facewise_Airports1.csv")
+fw = read.csv("DF_Facewise_Airports1.csv")
 
 fw = fw[,c('ID','Time.Spend','Final.Decision', 'Easyness', 'Pair')]
 colnames(fw)[1] = 'workerid'
